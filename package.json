@@ -1,0 +1,30 @@
+{
+  "name": "jsreport-worker-docker-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test --timeout=50000 && standard"
+  },
+  "author": "Jan Blaha",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "0.18.0",
+    "bluebird": "3.5.1"
+  },
+  "devDependencies": {
+    "eslint": "4.19.1",
+    "jsreport-core": "2.0.1",
+    "jsreport-handlebars": "2.0.0",
+    "jsreport-worker-delegate": "github:jsreport/jsreport-worker-delegate",
+    "mocha": "5.1.1",
+    "should": "13.2.1",
+    "standard": "11.0.1"
+  },
+  "standard": {
+    "env": {
+      "mocha": true,
+      "node": true
+    }
+  }
+}
