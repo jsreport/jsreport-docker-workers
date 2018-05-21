@@ -1,7 +1,11 @@
 const jsreport = require('jsreport-core')
 const express = require('express')
 
-const ip = process.env.ip // 192.168.1.2
+const ip = process.env.ip
+
+if (ip == null) {
+  throw new Error('tests require to define env var process.env.ip to local ip')
+}
 
 require('should')
 
