@@ -1,5 +1,4 @@
 const jsreport = require('jsreport-core')
-const express = require('express')
 
 const ip = process.env.ip
 
@@ -34,22 +33,7 @@ describe('docker', () => {
       .use(require('jsreport-handlebars')())
       .use(require('jsreport-scripts')())
 
-    return new Promise((resolve, reject) => {
-      const app = express()
-
-      app.get('/', (req, res) => {
-        res.status(200).end('ok response')
-      })
-
-      customServer = app.listen(2000, () => {
-        console.log('custom server started at port 2000')
-        resolve()
-      })
-
-      customServer.on('error', (err) => {
-        reject(err)
-      })
-    }).then(() => reporter.init())
+    return reporter.init()
   })
 
   afterEach(() => {
