@@ -10,12 +10,14 @@
   "license": "MIT",
   "dependencies": {
     "axios": "0.18.0",
-    "bluebird": "3.5.1"
+    "bluebird": "3.5.1",
+    "lodash.get": "4.4.2"
   },
   "devDependencies": {
     "eslint": "4.19.1",
     "jsreport-core": "2.0.1",
     "jsreport-handlebars": "2.0.0",
+    "jsreport-scripts": "2.0.1",
     "jsreport-worker-delegate": "github:jsreport/jsreport-worker-delegate",
     "mocha": "5.1.1",
     "should": "13.2.1",
