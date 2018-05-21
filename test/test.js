@@ -10,7 +10,6 @@ require('should')
 
 describe('docker', () => {
   let reporter
-  let customServer
 
   beforeEach(() => {
     reporter = jsreport({ allowLocalFilesAccess: true })
@@ -37,7 +36,6 @@ describe('docker', () => {
   })
 
   afterEach(() => {
-    customServer.close()
     return reporter.close()
   })
 
