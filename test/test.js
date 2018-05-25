@@ -1,9 +1,10 @@
+
 const jsreport = require('jsreport-core')
+const IS_LINUX = process.platform === 'linux'
+const hostIp = process.env.ip
 
-const ip = process.env.ip
-
-if (ip == null) {
-  throw new Error('tests require to define env var process.env.ip to local ip')
+if (hostIp == null) {
+  throw new Error('tests require to define env var process.env.ip to local host ip')
 }
 
 require('should')
@@ -25,18 +26,20 @@ describe('docker', () => {
           })
         }
       })
+      .use(require('jsreport-handlebars')())
+      .use(require('jsreport-scripts')())
+      .use(require('jsreport-worker-delegate')())
       .use(require('../')({
         discriminatorPath: 'context.tenant'
       }))
-      .use(require('jsreport-worker-delegate')())
-      .use(require('jsreport-handlebars')())
-      .use(require('jsreport-scripts')())
 
     return reporter.init()
   })
 
-  afterEach(() => {
-    return reporter.close()
+  afterEach(async () => {
+    if (reporter) {
+      await reporter.close()
+    }
   })
 
   it('should render', async () => {
@@ -54,61 +57,69 @@ describe('docker', () => {
     res.content.toString().should.be.eql('hello')
   })
 
-  it('networking', async () => {
-    await reporter.render({
-      template: {
-        content: 'Request {{foo}}',
-        recipe: 'html',
-        engine: 'handlebars'
-      },
-      data: {
-        foo: 'foo'
+  describe('networking', () => {
+    // TODO: assert only on linux and do a propert assert (it should error)
+    it('should not be able to communicate with other container using host ip', async function () {
+      if (!IS_LINUX) {
+        await reporter.close()
+        return this.skip()
       }
-    })
 
-    await reporter.render({
-      template: {
-        content: 'Request {{bar}}',
-        recipe: 'html',
-        engine: 'handlebars',
-        scripts: [{
-          content: `
-            const ip = "${ip}"
-            const http = require('http')
+      await reporter.render({
+        template: {
+          content: 'Request {{foo}}',
+          recipe: 'html',
+          engine: 'handlebars'
+        },
+        data: {
+          foo: 'foo'
+        }
+      })
 
-            function beforeRender(req, res, done) {
-              const target = 'http://' + ip + ':2001'
-              console.log('doing request to other worker ' + target + ' from script')
+      await reporter.render({
+        template: {
+          content: 'Request {{bar}}',
+          recipe: 'html',
+          engine: 'handlebars',
+          scripts: [{
+            content: `
+              const ip = "${hostIp}"
+              const http = require('http')
 
-              http.get(target, (res) => {
-                const { statusCode } = res
+              function beforeRender(req, res, done) {
+                const target = 'http://' + ip + ':2001'
+                console.log('doing request to other worker ' + target + ' from script')
 
-                if (statusCode !== 200) {
-                  console.log('request to ' + target + ' ended with erro, status ' + statusCode)
-                  done()
-                } else {
-                  console.log('request to ' + target + ' was good')
+                http.get(target, (res) => {
+                  const { statusCode } = res
 
-                  res.setEncoding('utf8');
-                  let rawData = '';
-
-                  res.on('data', (chunk) => { rawData += chunk; })
-
-                  res.on('end', () => {
-                    console.log('request to ' + target + ' body response: ' + rawData)
+                  if (statusCode !== 200) {
+                    console.log('request to ' + target + ' ended with erro, status ' + statusCode)
                     done()
-                  })
-                }
-              }).on('error', (err) => {
-                done(err)
-              })
-            }
-          `
-        }]
-      },
-      data: {
-        bar: 'bar'
-      }
+                  } else {
+                    console.log('request to ' + target + ' was good')
+
+                    res.setEncoding('utf8');
+                    let rawData = '';
+
+                    res.on('data', (chunk) => { rawData += chunk; })
+
+                    res.on('end', () => {
+                      console.log('request to ' + target + ' body response: ' + rawData)
+                      done()
+                    })
+                  }
+                }).on('error', (err) => {
+                  done(err)
+                })
+              }
+            `
+          }]
+        },
+        data: {
+          bar: 'bar'
+        }
+      })
     })
   })
 })
