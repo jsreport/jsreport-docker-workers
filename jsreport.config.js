@@ -2,7 +2,7 @@
 module.exports = {
   'name': 'worker-docker-manager',
   'main': 'lib/dockerManager.js',
-  'dependencies': ['worker-delegate'],
+  'dependencies': ['express'],
   'optionsSchema': {
     extensions: {
       'worker-docker-manager': {
@@ -14,7 +14,7 @@ module.exports = {
           pingServersInterval: { type: 'number', default: 5000 },
           pingHealthyInterval: { type: 'number', default: 20000 },
           containerImage: { type: 'string', default: 'worker' },
-          containerNamePrefix: { type: 'string', default: 'worker' },
+          containerNamePrefix: { type: 'string', default: 'jsreport_worker' },
           containerExposedPort: { type: 'number', default: 2000 },
           containerBasePublishPort: { type: 'number', default: 2001 },
           containerStartTimeout: { type: 'number', default: 10000 },
