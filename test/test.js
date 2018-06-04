@@ -399,7 +399,7 @@ describe('docker worker-container rotation', () => {
     })
 
     await Promise.all([
-      await reporter.render({
+      reporter.render({
         template: {
           content: '{{foo}}',
           recipe: 'chrome-pdf',
@@ -409,7 +409,7 @@ describe('docker worker-container rotation', () => {
           foo: 'foo'
         }
       }),
-      await reporter.render({
+      reporter.render({
         template: {
           content: '{{foo}}',
           recipe: 'chrome-pdf',
@@ -419,7 +419,7 @@ describe('docker worker-container rotation', () => {
           foo: 'foo'
         }
       }),
-      await reporter.render({
+      reporter.render({
         template: {
           content: '{{foo}}',
           recipe: 'chrome-pdf',
@@ -499,7 +499,7 @@ describe('docker worker-container rotation', () => {
 
   it('should not be able to communicate with other container using host ip', async function () {
     if (!IS_LINUX) {
-      console.log('not running this test because os is not linux')
+      console.log('not running "communicate with other container using host ip" test because os is not linux')
       await reporter.close()
       return
     }
