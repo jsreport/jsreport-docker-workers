@@ -13,7 +13,7 @@ module.exports = {
           discriminatorPath: { type: 'string' },
           pingServersInterval: { type: 'number', default: 5000 },
           pingHealthyInterval: { type: 'number', default: 20000 },
-          containerImage: { type: 'string', default: 'worker' },
+          containerImage: { type: 'string', default: 'jsreport/jsreport-worker' },
           containerNamePrefix: { type: 'string', default: 'jsreport_worker' },
           containerExposedPort: { type: 'number', default: 2000 },
           containerBasePublishPort: { type: 'number', default: 2001 },

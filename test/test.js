@@ -18,7 +18,7 @@ process.env.stack = stack
 function createReporterInstance (customOptions = {}, authEnabled) {
   const options = extend(true, {
     allowLocalFilesAccess: true,
-      templatingEngines: { strategy: 'in-process', timeout: 70000000 },
+    templatingEngines: { strategy: 'in-process', timeout: 70000000 },
     extensions: {
       'worker-docker-manager': {
         maxContainers: 2
