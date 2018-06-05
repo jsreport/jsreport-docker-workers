@@ -20,7 +20,7 @@
     "jsreport-chrome-pdf": "1.0.2",
     "jsreport-core": "2.0.3",
     "jsreport-express": "2.1.1",
-    "jsreport-fs-store": "2.1.1",
+    "jsreport-fs-store": "jsreport/jsreport-fs-store",
     "jsreport-handlebars": "2.0.0",
     "jsreport-scripts": "2.0.2",
     "mkdirp": "0.5.1",
