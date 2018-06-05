@@ -43,7 +43,7 @@ function createReporterInstance (customOptions = {}, authEnabled) {
       directory: __dirname,
       main: (reporter, definition) => {
         reporter.beforeRenderListeners.add('app', async (req, res) => {
-          req.context.tenant = testTenant
+          req.context.tenant = req.context.tenant || testTenant
         })
       }
     })
@@ -388,16 +388,6 @@ describe('docker worker-container rotation', () => {
   })
 
   it('should queue request when all workers are busy', async () => {
-    reporter.beforeRenderListeners.add('app', async (req, res) => {
-      const result = req.context.reportCounter % 2
-
-      if (result === 1) {
-        req.context.tenant = testTenant
-      } else {
-        req.context.tenant = 'secondTenant'
-      }
-    })
-
     await Promise.all([
       reporter.render({
         template: {
@@ -407,6 +397,9 @@ describe('docker worker-container rotation', () => {
         },
         data: {
           foo: 'foo'
+        },
+        context: {
+          tenant: '1'
         }
       }),
       reporter.render({
@@ -417,6 +410,9 @@ describe('docker worker-container rotation', () => {
         },
         data: {
           foo: 'foo'
+        },
+        context: {
+          tenant: '2'
         }
       }),
       reporter.render({
@@ -427,6 +423,9 @@ describe('docker worker-container rotation', () => {
         },
         data: {
           foo: 'foo'
+        },
+        context: {
+          tenant: '3'
         }
       })
     ])
@@ -505,7 +504,10 @@ describe('docker worker-container rotation', () => {
     }
 
     if (hostIp == null) {
-      throw new Error('test require to define env var process.env.hostIp to local host ip')
+      // skip for now on travis
+      console.log('not running "communicate with other container using host ip" test because process.env.hostIp not set')
+      await reporter.close()
+      return
     }
 
     const container = reporter.dockerManager.containersManager.registry[1]
