@@ -333,10 +333,6 @@ describe('docker worker-container rotation', () => {
   })
 
   it('should unset old tenant worker ip', async () => {
-    reporter.beforeRenderListeners.add('app', async (req, res) => {
-      req.context.tenant = req.context.reportCounter % 2 !== 0 ? testTenant : 'secondTenant'
-    })
-
     const res = await reporter.render({
       template: {
         content: '{{foo}}',
@@ -345,6 +341,9 @@ describe('docker worker-container rotation', () => {
       },
       data: {
         foo: 'foo'
+      },
+      context: {
+        tenant: testTenant
       }
     })
 
@@ -368,6 +367,9 @@ describe('docker worker-container rotation', () => {
       },
       data: {
         bar: 'bar'
+      },
+      context: {
+        tenant: '2'
       }
     })
 
@@ -461,10 +463,6 @@ describe('docker worker-container rotation', () => {
   it('should restart last used worker after process', async () => {
     const container = reporter.dockerManager.containersManager.registry[0]
 
-    reporter.beforeRenderListeners.add('app', async (req, res) => {
-      req.context.tenant = req.context.reportCounter % 2 !== 0 ? testTenant : 'secondTenant'
-    })
-
     await Promise.all([
       reporter.render({
         template: {
@@ -474,6 +472,9 @@ describe('docker worker-container rotation', () => {
         },
         data: {
           foo: 'foo'
+        },
+        context: {
+          tenant: testTenant
         }
       }),
       reporter.render({
@@ -484,6 +485,9 @@ describe('docker worker-container rotation', () => {
         },
         data: {
           bar: 'bar'
+        },
+        context: {
+          tenant: '2'
         }
       })
     ])
