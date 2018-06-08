@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "docker pull jsreport/jsreport-worker&&mocha test --timeout=50000 && standard"
+    "test": "docker pull jsreport/jsreport-worker&&set DEBUG=jsreport&&mocha test --timeout=50000 && standard"
   },
   "author": "Jan Blaha",
   "license": "MIT",
   "dependencies": {
     "axios": "0.18.0",
-    "bluebird": "3.5.1",
+    "bluebird": "3.5.1",   
     "lodash.get": "4.4.2",
     "uuid": "3.2.1"
   },

@@ -249,22 +249,20 @@ describe('docker worker-container rotation', () => {
 
     parsed.pages[0].text.should.be.eql('foo')
 
-    logs.should.matchAny(new RegExp(`No docker container previously assigned`))
-    logs.should.matchAny(new RegExp(`No need to restart unassigned docker container`))
-    logs.should.matchAny(new RegExp(`Delegating script to container in local worker`))
-    logs.should.matchAny(new RegExp(`Delegating recipe chrome-pdf to container in local worker`))
+    reporter.dockerManager.containersManager.containers[0].lastUsed.should.be.ok()
+    reporter.dockerManager.containersManager.containers.forEach((c) => c.numberOfRestarts.should.be.eql(0))
   })
 
   it('should find LRU worker', async () => {
-    const lastContainerIndex = reporter.dockerManager.containersManager.registry.length - 1
-    const container = reporter.dockerManager.containersManager.registry[lastContainerIndex]
+    const lastContainerIndex = reporter.dockerManager.containersManager.containers.length - 1
+    const container = reporter.dockerManager.containersManager.containers[lastContainerIndex]
 
     container.lastUsed = new Date(Date.now() - 60000)
 
     const res = await reporter.render({
       template: {
         content: '{{foo}}',
-        recipe: 'chrome-pdf',
+        recipe: 'html',
         engine: 'handlebars'
       },
       data: {
@@ -272,26 +270,15 @@ describe('docker worker-container rotation', () => {
       }
     })
 
-    const parsed = await parsePdf(res.content)
-
-    parsed.pages[0].text.should.be.eql('foo')
+    res.content.toString().should.be.eql('foo')
 
     logs.should.matchAny(new RegExp(`No docker container previously assigned, searching by LRU`))
     logs.should.matchAny(new RegExp(`LRU container is ${container.id}`))
   })
 
   it('should reuse same worker in multiple tasks for same request', async () => {
-    const container = reporter.dockerManager.containersManager.registry[0]
-    const choosedContainers = []
-
-    const originalFindContainer = reporter.dockerManager.containersManager.findContainer
-
-    reporter.dockerManager.containersManager.findContainer = async function (...args) {
-      const elected = await originalFindContainer.apply(reporter.dockerManager.containersManager, args)
-      choosedContainers.push(elected.id)
-      return elected
-    }
-
+    reporter.dockerManager.containersManager.containers[0].lastUsed = new Date(1)
+    reporter.dockerManager.containersManager.containers[1].lastUsed = new Date(2)
     await reporter.render({
       template: {
         content: '{{foo}}',
@@ -304,14 +291,17 @@ describe('docker worker-container rotation', () => {
       }
     })
 
-    choosedContainers.should.matchEach(container.id)
+    should(
+      reporter.dockerManager.containersManager.containers[0].lastUsed >
+      reporter.dockerManager.containersManager.containers[1].lastUsed
+    ).be.true()
   })
 
   it('should set tenant to worker ip', async () => {
     const res = await reporter.render({
       template: {
         content: '{{foo}}',
-        recipe: 'chrome-pdf',
+        recipe: 'html',
         engine: 'handlebars'
       },
       data: {
@@ -319,9 +309,7 @@ describe('docker worker-container rotation', () => {
       }
     })
 
-    const parsed = await parsePdf(res.content)
-
-    parsed.pages[0].text.should.be.eql('foo')
+    res.content.toString().should.be.eql('foo')
 
     const tenantWorker = await reporter.documentStore.collection('tenantWorkers').findOne({
       tenant: testTenant,
@@ -333,10 +321,10 @@ describe('docker worker-container rotation', () => {
   })
 
   it('should unset old tenant worker ip', async () => {
-    const res = await reporter.render({
+    await reporter.render({
       template: {
         content: '{{foo}}',
-        recipe: 'chrome-pdf',
+        recipe: 'html',
         engine: 'handlebars'
       },
       data: {
@@ -347,10 +335,6 @@ describe('docker worker-container rotation', () => {
       }
     })
 
-    let parsed = await parsePdf(res.content)
-
-    parsed.pages[0].text.should.be.eql('foo')
-
     let tenantWorker = await reporter.documentStore.collection('tenantWorkers').findOne({
       tenant: testTenant,
       stack
@@ -359,10 +343,10 @@ describe('docker worker-container rotation', () => {
     should(tenantWorker).be.ok()
     tenantWorker.ip.should.be.eql(ip)
 
-    const res2 = await reporter.render({
+    await reporter.render({
       template: {
         content: '{{bar}}',
-        recipe: 'chrome-pdf',
+        recipe: 'html',
         engine: 'handlebars'
       },
       data: {
@@ -372,10 +356,6 @@ describe('docker worker-container rotation', () => {
         tenant: '2'
       }
     })
-
-    parsed = await parsePdf(res2.content)
-
-    parsed.pages[0].text.should.be.eql('bar')
 
     await new Promise((resolve) => {
       setTimeout(resolve, 1000)
@@ -389,12 +369,12 @@ describe('docker worker-container rotation', () => {
     should(tenantWorker).be.not.ok()
   })
 
-  it('should queue request when all workers are busy', async () => {
-    await Promise.all([
+  it('should run two parallel requests for tenant', () => {
+    return Promise.all([
       reporter.render({
         template: {
           content: '{{foo}}',
-          recipe: 'chrome-pdf',
+          recipe: 'html',
           engine: 'handlebars'
         },
         data: {
@@ -407,7 +387,38 @@ describe('docker worker-container rotation', () => {
       reporter.render({
         template: {
           content: '{{foo}}',
-          recipe: 'chrome-pdf',
+          recipe: 'html',
+          engine: 'handlebars'
+        },
+        data: {
+          foo: 'foo'
+        },
+        context: {
+          tenant: '1'
+        }
+      })
+    ])
+  })
+
+  it('should queue request when all workers are busy', async () => {
+    await Promise.all([
+      reporter.render({
+        template: {
+          content: '{{foo}}',
+          recipe: 'html',
+          engine: 'handlebars'
+        },
+        data: {
+          foo: 'foo'
+        },
+        context: {
+          tenant: '1'
+        }
+      }),
+      reporter.render({
+        template: {
+          content: '{{foo}}',
+          recipe: 'html',
           engine: 'handlebars'
         },
         data: {
@@ -420,7 +431,7 @@ describe('docker worker-container rotation', () => {
       reporter.render({
         template: {
           content: '{{foo}}',
-          recipe: 'chrome-pdf',
+          recipe: 'html',
           engine: 'handlebars'
         },
         data: {
@@ -436,16 +447,14 @@ describe('docker worker-container rotation', () => {
   })
 
   it('should restart worker before switching from other tenant', async () => {
-    const container = reporter.dockerManager.containersManager.registry[0]
-
-    reporter.dockerManager.containersManager.registry.forEach((c, index) => {
+    reporter.dockerManager.containersManager.containers.forEach((c, index) => {
       c.tenant = `usedTenant${index + 1}`
     })
 
-    const res = await reporter.render({
+    await reporter.render({
       template: {
         content: '{{foo}}',
-        recipe: 'chrome-pdf',
+        recipe: 'html',
         engine: 'handlebars'
       },
       data: {
@@ -453,21 +462,15 @@ describe('docker worker-container rotation', () => {
       }
     })
 
-    const parsed = await parsePdf(res.content)
-
-    parsed.pages[0].text.should.be.eql('foo')
-
-    logs.should.matchAny(new RegExp(`Restarting and unregistering previous assigned docker container ${container.id}`))
+    reporter.dockerManager.containersManager.containers[0].numberOfRestarts.should.be.eql(1)
   })
 
   it('should restart last used worker after process', async () => {
-    const container = reporter.dockerManager.containersManager.registry[0]
-
     await Promise.all([
       reporter.render({
         template: {
           content: '{{foo}}',
-          recipe: 'chrome-pdf',
+          recipe: 'html',
           engine: 'handlebars'
         },
         data: {
@@ -480,7 +483,7 @@ describe('docker worker-container rotation', () => {
       reporter.render({
         template: {
           content: '{{bar}}',
-          recipe: 'chrome-pdf',
+          recipe: 'html',
           engine: 'handlebars'
         },
         data: {
@@ -496,8 +499,7 @@ describe('docker worker-container rotation', () => {
       setTimeout(resolve, 1000)
     })
 
-    logs.should.matchAny(new RegExp(`Warming up docker container ${container.id}`))
-    logs.should.matchAny(new RegExp(`Restarting docker container ${container.id}`))
+    reporter.dockerManager.containersManager.containers[0].numberOfRestarts = 1
   })
 
   it('should not be able to communicate with other container using host ip', async function () {
@@ -514,7 +516,7 @@ describe('docker worker-container rotation', () => {
       return
     }
 
-    const container = reporter.dockerManager.containersManager.registry[1]
+    const container = reporter.dockerManager.containersManager.containers[1]
 
     try {
       await reporter.render({
