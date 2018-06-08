@@ -1,9 +1,6 @@
 const jsreport = require('jsreport-core')
 const should = require('should')
 
-process.env.ip = '0.0.0.0'
-process.env.stack = 'test'
-
 describe('servers checker', () => {
   let reporter
 

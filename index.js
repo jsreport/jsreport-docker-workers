@@ -1,4 +1,4 @@
-const main = require('./lib/dockerManager.js')
+const main = require('./lib/main.js')
 let config = require('./jsreport.config.js')
 
 module.exports = (options) => {
