@@ -1,7 +1,7 @@
 
 module.exports = {
   'name': 'worker-docker-manager',
-  'main': 'lib/dockerManager.js',
+  'main': 'lib/main.js',
   'dependencies': ['express'],
   'optionsSchema': {
     extensions: {
