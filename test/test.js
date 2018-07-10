@@ -311,7 +311,7 @@ describe('docker worker-container rotation', () => {
 
     res.content.toString().should.be.eql('foo')
 
-    const tenantWorker = await reporter.documentStore.collection('tenantWorkers').findOne({
+    const tenantWorker = await reporter.documentStore.internalCollection('tenantWorkers').findOne({
       tenant: testTenant,
       stack
     })
@@ -335,7 +335,7 @@ describe('docker worker-container rotation', () => {
       }
     })
 
-    let tenantWorker = await reporter.documentStore.collection('tenantWorkers').findOne({
+    let tenantWorker = await reporter.documentStore.internalCollection('tenantWorkers').findOne({
       tenant: testTenant,
       stack
     })
@@ -361,7 +361,7 @@ describe('docker worker-container rotation', () => {
       setTimeout(resolve, 1000)
     })
 
-    tenantWorker = await reporter.documentStore.collection('tenantWorkers').findOne({
+    tenantWorker = await reporter.documentStore.internalCollection('tenantWorkers').findOne({
       tenant: testTenant,
       stack
     })
@@ -629,7 +629,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
 
       await remoteReporter.init()
 
-      await reporter.documentStore.collection('servers').update({
+      await reporter.documentStore.internalCollection('servers').update({
         ip: remoteIp,
         stack
       }, {
@@ -657,7 +657,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
     })
 
     it('should proxy request when tenant has active worker', async () => {
-      await reporter.documentStore.collection('tenantWorkers').insert({
+      await reporter.documentStore.internalCollection('tenantWorkers').insert({
         ip: remoteIp,
         port: 5489,
         stack,
@@ -685,7 +685,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
     })
 
     it('should process request when tenant has worker assigned but it is not active', async () => {
-      await reporter.documentStore.collection('tenantWorkers').insert({
+      await reporter.documentStore.internalCollection('tenantWorkers').insert({
         ip: remoteIp,
         port: 5489,
         stack,
@@ -696,7 +696,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
       reporter.dockerManager.serversChecker.stopPingInterval()
       remoteReporter.dockerManager.serversChecker.stopPingInterval()
 
-      await reporter.documentStore.collection('servers').update({
+      await reporter.documentStore.internalCollection('servers').update({
         ip: remoteIp,
         stack
       }, {
