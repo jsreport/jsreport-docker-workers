@@ -179,6 +179,61 @@ describe('docker render', () => {
     logs.should.matchAny(/Delegating script/)
   })
 
+  it('should call error listener when there was an error in delegate execution', async () => {
+    let renderError
+    let delegateErrorInfo
+
+    reporter.dockerManager.addContainerDelegateErrorListener('testing-worker-manager', (params) => {
+      delegateErrorInfo = params
+    })
+
+    try {
+      await reporter.render({
+        template: {
+          content: 'foo {{',
+          recipe: 'chrome-pdf',
+          engine: 'handlebars'
+        }
+      })
+    } catch (e) {
+      renderError = e
+    }
+
+    should(delegateErrorInfo.type).be.eql('scriptManager')
+    should(delegateErrorInfo.error).be.Error()
+    should(delegateErrorInfo.data.req).be.ok()
+    should(renderError).be.Error()
+  })
+
+  it('should call error listener and support throwing custom error', async () => {
+    let renderError
+    let delegateErrorInfo
+
+    reporter.dockerManager.addContainerDelegateErrorListener('testing-worker-manager', (params) => {
+      delegateErrorInfo = params
+
+      throw new Error('Testing error')
+    })
+
+    try {
+      await reporter.render({
+        template: {
+          content: 'foo {{',
+          recipe: 'chrome-pdf',
+          engine: 'handlebars'
+        }
+      })
+    } catch (e) {
+      renderError = e
+    }
+
+    should(delegateErrorInfo.type).be.eql('scriptManager')
+    should(delegateErrorInfo.error).be.Error()
+    should(delegateErrorInfo.data.req).be.ok()
+    should(renderError).be.Error()
+    should(renderError.message).be.eql('Testing error')
+  })
+
   it('should keep properties assigned to req objects during script execution', async () => {
     let sameInReq = false
     let sameInRes = false
