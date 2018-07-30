@@ -17,9 +17,20 @@ module.exports = {
           containerNamePrefix: { type: 'string', default: 'jsreport_worker' },
           containerExposedPort: { type: 'number', default: 2000 },
           containerBasePublishPort: { type: 'number', default: 2001 },
+          containerCustomEnv: {
+            anyOf: [{
+              type: 'string',
+              '$jsreport-constantOrArray': []
+            }, {
+              type: 'array',
+              items: { type: 'string' }
+            }]
+          },
           containerStartTimeout: { type: 'number', default: 10000 },
           containerRestartPolicy: { type: 'boolean', default: true },
           containerRestartTimeout: { type: 'number', default: 5000 },
+          containerDelegateTimeout: { type: 'number', default: 50000 },
+          containerDebuggingSession: { type: 'boolean', default: false },
           subnet: { type: 'string', default: '172.30.0.0/24' },
           network: { type: 'string', default: 'nw_jsreport_workers_docker_manager' },
           busyQueueWaitingTimeout: { type: 'number', default: 10000 },
