@@ -144,7 +144,7 @@ describe('docker render', () => {
 
     res.content.toString().should.containEql('PDF')
 
-    logs.should.matchAny(/Processing render callback from worker/)
+    logs.should.matchAny(/Processing render callback/)
   })
 
   it('should render both header and footer in worker', async () => {
@@ -160,7 +160,7 @@ describe('docker render', () => {
     res.content.toString().should.containEql('PDF')
 
     logs
-      .filter(m => /Processing render callback from worker/.test(m))
+      .filter(m => /Processing render callback/.test(m))
       .should.have.length(2)
   })
 
