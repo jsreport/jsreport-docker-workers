@@ -778,7 +778,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
 
       parsed.pages[0].text.should.be.eql('foo')
 
-      logs.should.matchAny(new RegExp(`Remote worker ${remoteIp} is not healthy, continuing request in local`))
+      logs.should.matchAny(new RegExp(`Remote worker ${remoteIp} is not healthy (port: 5489), continuing request in local`))
       logs.should.matchAny(new RegExp(`Delegating script to container in local worker`))
       logs.should.matchAny(new RegExp(`Delegating recipe chrome-pdf to container in local worker`))
     })
