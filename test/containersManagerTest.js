@@ -29,7 +29,7 @@ describe('containers manager', () => {
     container.tenant = 'a'
   })
 
-  it('allocate should reuese assigned container and increase number of requests', async () => {
+  it('allocate should reuse assigned container and increase number of requests', async () => {
     containersManager.containers[0].tenant = 'a'
     containersManager.containers[0].numberOfRequests = 1
     const container = await containersManager.allocate({
