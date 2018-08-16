@@ -15,23 +15,23 @@
     "lodash.get": "4.4.2",
     "lodash.omit": "4.5.0",
     "node.extend": "2.0.0",
-    "uuid": "3.2.1"
+    "uuid": "3.3.2"
   },
   "devDependencies": {
-    "eslint": "4.19.1",
+    "eslint": "5.3.0",
     "jsreport-authentication": "2.1.0",
     "jsreport-chrome-pdf": "1.1.5",
     "jsreport-core": "2.1.0",
     "jsreport-express": "2.2.0",
     "jsreport-fs-store": "2.1.6",
     "jsreport-handlebars": "2.0.0",
-    "jsreport-scripts": "2.0.2",
+    "jsreport-scripts": "2.0.3",
     "mkdirp": "0.5.1",
     "mocha": "5.2.0",
     "parse-pdf": "1.0.0",
-    "puppeteer": "1.5.0",
+    "puppeteer": "1.7.0",
     "rimraf": "2.6.2",
-    "should": "13.2.1",
+    "should": "13.2.3",
     "standard": "11.0.1"
   },
   "standard": {
