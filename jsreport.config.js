@@ -34,7 +34,7 @@ module.exports = {
           subnet: { type: 'string', default: '172.30.0.0/24' },
           network: { type: 'string', default: 'nw_jsreport_workers_docker_manager' },
           busyQueueWaitingTimeout: { type: 'number', default: 10000 },
-          maxContainers: { type: 'number', minimum: 1, default: 4 }
+          numberOfWorkers: { type: 'number', minimum: 1, default: 4 }
         },
         required: ['discriminatorPath']
       }

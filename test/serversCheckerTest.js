@@ -11,7 +11,7 @@ describe('servers checker', () => {
       },
       extensions: {
         workerDockerManager: {
-          maxContainers: 1,
+          numberOfWorkers: 1,
           pingInterval: 10,
           discriminatorPath: 'context.tenant'
         },
