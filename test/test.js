@@ -21,7 +21,7 @@ function createReporterInstance (customOptions = {}, authEnabled) {
     templatingEngines: { strategy: 'in-process', timeout: 70000000 },
     extensions: {
       'worker-docker-manager': {
-        numberOfWorkers: 2
+        maxContainers: 2
       }
     }
   }, customOptions)
