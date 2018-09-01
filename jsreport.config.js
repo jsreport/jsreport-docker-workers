@@ -36,6 +36,8 @@ module.exports = {
           containerCPUs: { type: 'string', default: '0.5' },
           containerLogDriver: { type: 'string', default: 'json-file' },
           containerLogOpt: { type: 'object' },
+          containerTempVolumeSourcePrefix: { type: 'string', default: '/tmp' },
+          containerTempVolumeTarget: { type: 'string', default: '/tmp' },
           subnet: { type: 'string', default: '172.30.0.0/24' },
           network: { type: 'string', default: 'nw_jsreport_workers_docker_manager' },
           busyQueueWaitingTimeout: { type: 'number', default: 10000 },
