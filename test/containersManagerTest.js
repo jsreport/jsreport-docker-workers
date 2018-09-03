@@ -7,7 +7,7 @@ describe('containers manager', () => {
   beforeEach(async () => {
     containersManager = createContainersManager({
       predefinedContainersPool: {
-        containers: [{id: 'a'}, {id: 'b'}],
+        containers: [{ id: 'a' }, { id: 'b' }],
         start: () => {},
         remove: () => {}
       },

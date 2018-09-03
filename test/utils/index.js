@@ -1,13 +1,12 @@
 
-const mkdirp = require('mkdirp')
-const rimraf = require('rimraf')
+const FS = require('fs-extra')
 
 function createDir (absoluteDir) {
-  mkdirp.sync(absoluteDir)
+  FS.emptydir(absoluteDir)
 }
 
 function removeDir (absoluteDir) {
-  rimraf.sync(absoluteDir)
+  FS.emptydir(absoluteDir)
 }
 
 exports.createDir = createDir
