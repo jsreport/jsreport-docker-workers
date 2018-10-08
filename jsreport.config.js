@@ -10,7 +10,7 @@ module.exports = {
       'worker-docker-manager': {
         type: 'object',
         properties: {
-          discriminatorPath: { type: 'string' },
+          discriminatorPath: { type: 'string', default: 'context.reportCounter' },
           pingServersInterval: { type: 'number', default: 5000 },
           pingHealthyInterval: { type: 'number', default: 20000 },
           container: {
@@ -62,8 +62,7 @@ module.exports = {
           network: { type: 'string', default: 'nw_jsreport_workers_docker_manager' },
           busyQueueWaitingTimeout: { type: 'number', default: 10000 },
           numberOfWorkers: { type: 'number', minimum: 1, default: 4 }
-        },
-        required: ['discriminatorPath']
+        }
       }
     }
   }

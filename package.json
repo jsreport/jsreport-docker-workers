@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "docker pull jsreport/jsreport-worker&&set DEBUG=jsreport&&mocha test --timeout=50000 && standard",
+    "test": "docker pull jsreport/jsreport-worker&&set DEBUG=jsreport&&mocha test --exit --timeout=50000 && standard",
     "lint": "standard"
   },
   "author": "Jan Blaha",
