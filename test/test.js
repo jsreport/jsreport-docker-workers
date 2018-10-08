@@ -8,12 +8,7 @@ const utils = require('./utils')
 
 const IS_LINUX = process.platform === 'linux'
 const hostIp = process.env.hostIp
-const ip = '0.0.0.0'
-const stack = 'test'
 const testTenant = 'testTenant'
-
-process.env.ip = ip
-process.env.stack = stack
 
 function createReporterInstance (customOptions = {}, authEnabled) {
   const options = extend(true, {
@@ -21,7 +16,7 @@ function createReporterInstance (customOptions = {}, authEnabled) {
     templatingEngines: { strategy: 'in-process', timeout: 70000000 },
     extensions: {
       'worker-docker-manager': {
-        maxContainers: 2
+        numberOfWorkers: 2
       }
     }
   }, customOptions)
@@ -368,11 +363,11 @@ describe('docker worker-container rotation', () => {
 
     const tenantWorker = await reporter.documentStore.internalCollection('tenantWorkers').findOne({
       tenant: testTenant,
-      stack
+      stack: reporter.options.stack
     })
 
     should(tenantWorker).be.ok()
-    tenantWorker.ip.should.be.eql(ip)
+    tenantWorker.ip.should.be.eql(reporter.options.ip)
   })
 
   it('should unset old tenant worker ip', async () => {
@@ -392,11 +387,11 @@ describe('docker worker-container rotation', () => {
 
     let tenantWorker = await reporter.documentStore.internalCollection('tenantWorkers').findOne({
       tenant: testTenant,
-      stack
+      stack: reporter.options.stack
     })
 
     should(tenantWorker).be.ok()
-    tenantWorker.ip.should.be.eql(ip)
+    tenantWorker.ip.should.be.eql(reporter.options.ip)
 
     await reporter.render({
       template: {
@@ -418,7 +413,7 @@ describe('docker worker-container rotation', () => {
 
     tenantWorker = await reporter.documentStore.internalCollection('tenantWorkers').findOne({
       tenant: testTenant,
-      stack
+      stack: reporter.options.stack
     })
 
     should(tenantWorker).be.not.ok()
@@ -662,10 +657,9 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
 
       addLogsRewriter(reporter, logs)
 
-      process.env.remoteIp = remoteIp
-
       remoteReporter = createReporterInstance({
         httpPort: 5489,
+        ip: remoteIp,
         store: {
           provider: 'fs'
         },
@@ -675,9 +669,10 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
             syncModifications: false
           },
           'worker-docker-manager': {
-            ipEnvVarName: 'remoteIp',
-            containerNamePrefix: 'remote_jsreport_worker',
-            containerBasePublishPort: 4001
+            container: {
+              namePrefix: 'remote_jsreport_worker',
+              basePublishPort: 4001
+            }
           }
         }
       }, authEnabled)
@@ -686,12 +681,12 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
 
       await reporter.documentStore.internalCollection('servers').update({
         ip: remoteIp,
-        stack
+        stack: reporter.options.stack
       }, {
         $set: {
           ip: remoteIp,
           ping: new Date(),
-          stack
+          stack: reporter.options.stack
         }
       }, { upsert: true })
 
@@ -700,8 +695,6 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
     })
 
     afterEach(async () => {
-      delete process.env.remoteIp
-
       if (reporter) {
         await reporter.close()
       }
@@ -715,7 +708,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
       await reporter.documentStore.internalCollection('tenantWorkers').insert({
         ip: remoteIp,
         port: 5489,
-        stack,
+        stack: reporter.options.stack,
         tenant: testTenant,
         updateAt: new Date()
       })
@@ -743,7 +736,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
       await reporter.documentStore.internalCollection('tenantWorkers').insert({
         ip: remoteIp,
         port: 5489,
-        stack,
+        stack: reporter.options.stack,
         tenant: testTenant,
         updateAt: new Date()
       })
@@ -753,7 +746,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
 
       await reporter.documentStore.internalCollection('servers').update({
         ip: remoteIp,
-        stack
+        stack: reporter.options.stack
       }, {
         $set: {
           // makes the server to fail the status check

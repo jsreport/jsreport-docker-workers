@@ -16,7 +16,7 @@ describe('containers pool', () => {
       network: 'nw_jsreport_workers_docker_manager',
       subnet: '172.30.0.0/24',
       namePrefix: 'jsreport_worker',
-      maxContainers: 3
+      numberOfWorkers: 3
     })
   })
 
