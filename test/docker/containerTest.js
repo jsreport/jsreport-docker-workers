@@ -12,7 +12,7 @@ describe('container', () => {
       image: 'jsreport/jsreport-worker',
       startTimeout: 2000,
       logger: reporter.logger,
-      network: 'nw_jsreport_workers_docker_manager',
+      network: 'nw_jsreport_docker_workers',
       id: `jsreport_worker_1`
     })
   })

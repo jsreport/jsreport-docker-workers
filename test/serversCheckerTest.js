@@ -1,3 +1,4 @@
+const os = require('os')
 const jsreport = require('jsreport-core')
 const should = require('should')
 
@@ -5,12 +6,12 @@ describe('servers checker', () => {
   let reporter
 
   beforeEach(() => {
-    return (reporter = jsreport({
+    const options = {
       store: {
         provider: 'fs'
       },
       extensions: {
-        workerDockerManager: {
+        'docker-workers': {
           numberOfWorkers: 1,
           pingInterval: 10,
           discriminatorPath: 'context.tenant'
@@ -19,7 +20,15 @@ describe('servers checker', () => {
           dataDirectory: 'temp'
         }
       }
-    })).use(require('../')()).use(require('jsreport-fs-store')()).init()
+    }
+
+    if (os.type() === 'Darwin') {
+      // this is needed because default temp directory is not shared from OSX and Docker
+      // so it fails, we need to use default shared directory "/tmp"
+      options.tempDirectory = '/tmp/jsreport-docker-workers'
+    }
+
+    return (reporter = jsreport(options)).use(require('../')()).use(require('jsreport-fs-store')()).init()
   })
 
   afterEach(() => reporter.close())

@@ -13,7 +13,7 @@ describe('containers pool', () => {
       basePublishPort: 2000,
       image: 'jsreport/jsreport-worker',
       logger: reporter.logger,
-      network: 'nw_jsreport_workers_docker_manager',
+      network: 'nw_jsreport_docker_workers',
       subnet: '172.30.0.0/24',
       namePrefix: 'jsreport_worker',
       numberOfWorkers: 3

@@ -1,4 +1,4 @@
-
+const os = require('os')
 const path = require('path')
 const should = require('should')
 const parsePdf = require('parse-pdf')
@@ -11,15 +11,21 @@ const hostIp = process.env.hostIp
 const testTenant = 'testTenant'
 
 function createReporterInstance (customOptions = {}, authEnabled) {
-  const options = extend(true, {
+  const defaultOptions = {
     allowLocalFilesAccess: true,
     templatingEngines: { strategy: 'in-process', timeout: 70000000 },
     extensions: {
-      'worker-docker-manager': {
+      'docker-workers': {
         numberOfWorkers: 2
       }
     }
-  }, customOptions)
+  }
+
+  if (os.type() === 'Darwin') {
+    defaultOptions.tempDirectory = '/tmp/jsreport-docker-workers'
+  }
+
+  const options = extend(true, defaultOptions, customOptions)
 
   if (authEnabled) {
     options.extensions = options.extensions || {}
@@ -340,6 +346,8 @@ describe('docker worker-container rotation', () => {
         foo: 'foo'
       }
     })
+
+    console.log()
 
     should(
       reporter.dockerManager.containersManager.containers[0].lastUsed >
@@ -668,7 +676,7 @@ function remoteWorkerTests (title, remoteIp, authEnabled = false) {
             dataDirectory: sharedDataDirectory,
             syncModifications: false
           },
-          'worker-docker-manager': {
+          'docker-workers': {
             container: {
               namePrefix: 'remote_jsreport_worker',
               basePublishPort: 4001
