@@ -1,13 +1,13 @@
 
 module.exports = {
-  'name': 'worker-docker-manager',
+  'name': 'docker-workers',
   'main': 'lib/main.js',
   'dependencies': ['express'],
   'optionsSchema': {
     ip: { type: 'string' },
     stack: { type: 'string', default: 'default' },
     extensions: {
-      'worker-docker-manager': {
+      'docker-workers': {
         type: 'object',
         properties: {
           discriminatorPath: { type: 'string', default: 'context.reportCounter' },
@@ -59,7 +59,7 @@ module.exports = {
             }
           },
           subnet: { type: 'string', default: '172.30.0.0/24' },
-          network: { type: 'string', default: 'nw_jsreport_workers_docker_manager' },
+          network: { type: 'string', default: 'nw_jsreport_docker_workers' },
           busyQueueWaitingTimeout: { type: 'number', default: 10000 },
           numberOfWorkers: { type: 'number', minimum: 1, default: 4 }
         }

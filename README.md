@@ -3,3 +3,5 @@
 [![Build Status](https://travis-ci.org/jsreport/jsreport-docker-workers.png?branch=master)](https://travis-ci.org/jsreport/jsreport-docker-workers)
 
 > jsreport extension managing docker containers and delegating work to them
+
+See https://jsreport.net/learn/docker-workers
