@@ -17,6 +17,7 @@
     "listener-collection": "1.2.0",
     "lodash.get": "4.4.2",
     "lodash.omit": "4.5.0",
+    "lodash.set": "4.3.2",
     "node.extend": "2.0.2",
     "serializator": "1.0.0",
     "uuid": "3.3.2"
