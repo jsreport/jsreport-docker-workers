@@ -20,7 +20,7 @@ module.exports = {
               namePrefix: 'jsreport_worker',
               exposedPort: 2000,
               basePublishPort: 2001,
-              baseDebugPort: 9229,
+              baseDebugPort: 9230,
               startTimeout: 10000,
               restartPolicy: true,
               delegateTimeout: 50000,
@@ -36,7 +36,7 @@ module.exports = {
               namePrefix: { type: 'string', default: 'jsreport_worker' },
               exposedPort: { type: 'number', default: 2000 },
               basePublishPort: { type: 'number', default: 2001 },
-              baseDebugPort: { type: 'number', default: 9229 },
+              baseDebugPort: { type: 'number', default: 9230 },
               customEnv: {
                 anyOf: [{
                   type: 'string',
