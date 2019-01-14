@@ -6,6 +6,9 @@ describe('containers manager', () => {
 
   beforeEach(async () => {
     containersManager = createContainersManager({
+      container: {
+        warmupPolicy: true
+      },
       predefinedContainersPool: {
         containers: [{ id: 'a' }, { id: 'b' }],
         start: () => {},
@@ -17,7 +20,7 @@ describe('containers manager', () => {
     return containersManager.start()
   })
 
-  afterEach(() => containersManager.close())
+  afterEach(() => containersManager && containersManager.close())
 
   it('allocate should get unsused container and set lastUsed, tenant and inc numberOfRequests', async () => {
     const container = await containersManager.allocate({
