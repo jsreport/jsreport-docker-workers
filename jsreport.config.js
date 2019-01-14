@@ -23,6 +23,7 @@ module.exports = {
               baseDebugPort: 9230,
               startTimeout: 10000,
               restartPolicy: true,
+              warmupPolicy: true,
               delegateTimeout: 50000,
               debuggingSession: false,
               memorySwap: '512m',
