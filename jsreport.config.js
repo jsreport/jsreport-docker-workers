@@ -49,6 +49,7 @@ module.exports = {
               },
               startTimeout: { type: 'number', default: 10000 },
               restartPolicy: { type: 'boolean', default: true },
+              warmupPolicy: { type: 'boolean', default: true },
               restartTimeout: { type: 'number', default: 5000 },
               delegateTimeout: { type: 'number', default: 50000 },
               debuggingSession: { type: 'boolean', default: false },
