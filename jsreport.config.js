@@ -11,6 +11,7 @@ module.exports = {
         type: 'object',
         properties: {
           discriminatorPath: { type: 'string', default: 'context.reportCounter' },
+          containerParallelRequestsLimit: { type: 'number' },
           pingServersInterval: { type: 'number', default: 5000 },
           pingHealthyInterval: { type: 'number', default: 20000 },
           container: {

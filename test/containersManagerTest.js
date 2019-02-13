@@ -9,6 +9,7 @@ describe('containers manager', () => {
       container: {
         warmupPolicy: true
       },
+      containerParallelRequestsLimit: 50,
       predefinedContainersPool: {
         containers: [{ id: 'a' }, { id: 'b' }],
         start: () => {},
@@ -69,6 +70,16 @@ describe('containers manager', () => {
 
     containersManager.allocate({
       tenant: 'c'
+    })
+  })
+
+  it('allocate should queue if container reached the containerParallelRequestsLimit', (done) => {
+    containersManager.containers[0].tenant = 'a'
+    containersManager.containers[0].numberOfRequests = 100
+    containersManager.busyQueue.push = () => done()
+
+    containersManager.allocate({
+      tenant: 'a'
     })
   })
 
