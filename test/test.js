@@ -347,8 +347,6 @@ describe('docker worker-container rotation', () => {
       }
     })
 
-    console.log()
-
     should(
       reporter.dockerManager.containersManager.containers[0].lastUsed >
       reporter.dockerManager.containersManager.containers[1].lastUsed

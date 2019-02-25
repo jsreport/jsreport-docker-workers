@@ -73,16 +73,6 @@ describe('containers manager', () => {
     })
   })
 
-  it('allocate should queue if container reached the containerParallelRequestsLimit', (done) => {
-    containersManager.containers[0].tenant = 'a'
-    containersManager.containers[0].numberOfRequests = 100
-    containersManager.busyQueue.push = () => done()
-
-    containersManager.allocate({
-      tenant: 'a'
-    })
-  })
-
   it('recycle should restart container', async () => {
     const container = containersManager.containers[0]
     container.numberOfRequests = 1
