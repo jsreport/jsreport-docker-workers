@@ -1,3 +1,6 @@
+**⚠️ This repository has been moved to the monorepo [jsreport/jsreport](https://github.com/jsreport/jsreport)**
+--
+
 # jsreport-docker-workers
 [![NPM Version](http://img.shields.io/npm/v/jsreport-docker-workers.svg?style=flat-square)](https://npmjs.com/package/jsreport-docker-workers)
 [![Build Status](https://travis-ci.org/jsreport/jsreport-docker-workers.png?branch=master)](https://travis-ci.org/jsreport/jsreport-docker-workers)
